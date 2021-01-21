@@ -1,0 +1,11 @@
+{
+  "name": "@brajkowski/connect4-web-multiplayer-server",
+  "version": "1.0.0",
+  "description": "A websocket server that can connect connect 4 game clients together.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Brandon Rajkowski",
+  "license": "ISC"
+}
