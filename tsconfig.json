@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "outDir": "./dist"
   },
-  "include": ["./src/**/*"]
+  "include": ["./src/**/*"],
+  "exclude": ["./src/__test__/**/*"]
 }

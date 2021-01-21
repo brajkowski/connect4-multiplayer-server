@@ -1,1 +1,10 @@
-export { helloWorld } from './hello';
+import WebSocket = require('ws');
+
+const wss = new WebSocket.Server({ port: 8080 });
+
+wss.on('connection', (ws) => {
+  ws.on('message', (data) => {
+    console.log(data);
+  });
+  ws.send('hello from server');
+});
