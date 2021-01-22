@@ -1,11 +1,26 @@
 import WebSocket = require('ws');
+import { Data } from 'ws';
 
-const ws = new WebSocket('ws://localhost:8080');
+export class Connect4Client {
+  private ws: WebSocket;
 
-ws.on('open', () => {
-  ws.send('hello from client');
-});
+  constructor() {}
 
-ws.on('message', (data) => {
-  console.log(data);
-});
+  open(address: string) {
+    this.ws = new WebSocket(address);
+    this.ws.on('message', this.onMessage.bind(this));
+    this.ws.on('open', this.onOpen.bind(this));
+  }
+
+  close() {
+    this.ws.close();
+  }
+
+  private onOpen() {
+    this.ws.send('hello from client');
+  }
+
+  private onMessage(data: Data) {
+    console.log(data);
+  }
+}
