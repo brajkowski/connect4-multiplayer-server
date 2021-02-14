@@ -5,26 +5,36 @@ import { ClientPacket } from './model/client-packet';
 
 export class Connect4Client {
   private ws: WebSocket;
-  private readonly session = 'test-session';
-  private readonly user = 'brandon';
-
-  constructor() {}
+  private session: string;
+  private user: string;
 
   open(address: string) {
     this.ws = new WebSocket(address);
     this.ws.on('message', this.onMessage.bind(this));
-    this.ws.on('open', this.onOpen.bind(this));
   }
 
   close() {
     this.ws.close();
   }
 
-  private onOpen() {
+  createSession(session: string, user: string) {
+    this.session = session;
+    this.user = user;
     const packet: ClientPacket = {
       session: this.session,
       user: this.user,
       action: ClientAction.CREATE_SESSION,
+    };
+    this.ws.send(JSON.stringify(packet));
+  }
+
+  joinSession(session: string, user: string) {
+    this.session = session;
+    this.user = user;
+    const packet: ClientPacket = {
+      session: this.session,
+      user: this.user,
+      action: ClientAction.JOIN_SESSION,
     };
     this.ws.send(JSON.stringify(packet));
   }
