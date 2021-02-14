@@ -7,11 +7,12 @@ import WebSocket = require('ws');
 
 export class Session {
   private logic = new BitboardLogic();
-  private userMap = new Map<string, Player>();
+  private playerMap = new Map<string, Player>();
   private opponent: WebSocket;
   private opponentName: string;
 
   constructor(private owner: WebSocket, private ownerName: string) {
+    this.playerMap.set(this.ownerName, Player.One);
     const packet: ServerPacket = {
       action: ServerAction.OK,
     };
@@ -20,8 +21,6 @@ export class Session {
 
   handlePacket(packet: ClientPacket) {
     switch (packet.action) {
-      case ClientAction.JOIN_SESSION:
-        this.mapUser(packet.user);
       case ClientAction.MOVE:
         this.move(packet.user, packet.column);
     }
@@ -30,6 +29,7 @@ export class Session {
   opponentJoin(opponent: WebSocket, opponentName: string) {
     this.opponent = opponent;
     this.opponentName = opponentName;
+    this.playerMap.set(this.opponentName, Player.Two);
     const confirmPacket: ServerPacket = {
       action: ServerAction.OK,
       user: this.ownerName,
@@ -44,17 +44,7 @@ export class Session {
 
   private move(user: string, column: number) {
     if (this.logic.canPlaceChip(column)) {
-      this.logic.placeChip(this.userMap.get(user), column);
-    }
-  }
-
-  private mapUser(user: string) {
-    if (this.userMap.size === 0) {
-      this.userMap.set(user, Player.One);
-    } else if (this.userMap.size === 1) {
-      this.userMap.set(user, Player.Two);
-    } else {
-      throw new Error('Too many players joined session');
+      this.logic.placeChip(this.playerMap.get(user), column);
     }
   }
 }
