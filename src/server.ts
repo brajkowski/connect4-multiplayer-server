@@ -8,8 +8,6 @@ export class Connect4Server {
   private wss: Server;
   private sessions: Map<string, Session> = new Map();
 
-  constructor() {}
-
   start(port: number) {
     this.wss = new Server({ port });
     this.wss.on('connection', this.onConnection.bind(this));
