@@ -1,10 +1,12 @@
 import WebSocket = require('ws');
 import { Data } from 'ws';
-import { Action } from './model/action';
+import { ClientAction } from './model/client-action';
 import { ClientPacket } from './model/client-packet';
 
 export class Connect4Client {
   private ws: WebSocket;
+  private readonly session = 'test-session';
+  private readonly user = 'brandon';
 
   constructor() {}
 
@@ -20,9 +22,9 @@ export class Connect4Client {
 
   private onOpen() {
     const packet: ClientPacket = {
-      session: null,
-      action: Action.CREATE_SESSION,
-      user: 'brandon',
+      session: this.session,
+      user: this.user,
+      action: ClientAction.CREATE_SESSION,
     };
     this.ws.send(JSON.stringify(packet));
   }

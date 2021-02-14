@@ -1,19 +1,28 @@
 import { BitboardLogic, Player } from '@brajkowski/connect4-web-logic';
-import { Action } from './model/action';
-import { Packet } from './model/packet';
+import { ClientAction } from './model/client-action';
+import { ClientPacket } from './model/client-packet';
+import { ServerAction } from './model/server-action';
+import { ServerPacket } from './model/server-packet';
 
 export class Session {
   private logic = new BitboardLogic();
   private userMap = new Map<string, Player>();
   private activePlayer = Player.One;
 
-  handlePacket(packet: Packet): void {
+  constructor(user: string) {
+    this.mapUser(user);
+  }
+
+  handlePacket(packet: ClientPacket): ServerPacket {
     switch (packet.action) {
-      case Action.JOIN:
+      case ClientAction.JOIN_SESSION:
         this.mapUser(packet.user);
-      case Action.MOVE:
+      case ClientAction.MOVE:
         this.move(packet.user, packet.column);
     }
+    return {
+      action: ServerAction.OK,
+    };
   }
 
   private move(user: string, column: number) {

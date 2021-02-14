@@ -1,12 +1,14 @@
 import WebSocket = require('ws');
-import { BitboardLogic } from '@brajkowski/connect4-web-logic';
 import { Data, Server } from 'ws';
-import { Action } from './model/action';
-import { Packet } from './model/packet';
+import { ClientAction } from './model/client-action';
+import { ClientPacket } from './model/client-packet';
+import { ServerAction } from './model/server-action';
+import { ServerPacket } from './model/server-packet';
+import { Session } from './session';
 
 export class Connect4Server {
   private wss: Server;
-  private sessions: Map<string, BitboardLogic> = new Map();
+  private sessions: Map<string, Session> = new Map();
 
   constructor() {}
 
@@ -21,16 +23,26 @@ export class Connect4Server {
 
   private onConnection(ws: WebSocket) {
     ws.on('message', (data) => this.onMessage(ws, data));
-    const packet: Packet = {
-      session: null,
-      action: Action.OK,
-      user: 'server',
-    };
-    ws.send(JSON.stringify(packet));
   }
 
   private onMessage(ws: WebSocket, data: Data) {
-    const packet: Packet = JSON.parse(data.toString());
-    console.log(packet);
+    const incomingPacket: ClientPacket = JSON.parse(data.toString());
+    console.log(incomingPacket);
+    if (incomingPacket.action === ClientAction.CREATE_SESSION) {
+      const responsePacket = this.createSession(incomingPacket);
+      ws.send(JSON.stringify(responsePacket));
+      return;
+    }
+    const responsePacket = this.sessions
+      .get(incomingPacket.session)
+      .handlePacket(incomingPacket);
+    ws.send(JSON.stringify(responsePacket));
+  }
+
+  private createSession(packet: ClientPacket): ServerPacket {
+    this.sessions.set(packet.session, new Session(packet.user));
+    return {
+      action: ServerAction.OK,
+    };
   }
 }
