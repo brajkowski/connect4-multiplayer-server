@@ -2,7 +2,7 @@ import WebSocket = require('ws');
 import { BitboardLogic } from '@brajkowski/connect4-web-logic';
 import { Data, Server } from 'ws';
 import { Action } from './model/action';
-import { ClientPacket } from './model/client-packet';
+import { Packet } from './model/packet';
 
 export class Connect4Server {
   private wss: Server;
@@ -21,7 +21,7 @@ export class Connect4Server {
 
   private onConnection(ws: WebSocket) {
     ws.on('message', (data) => this.onMessage(ws, data));
-    const packet: ClientPacket = {
+    const packet: Packet = {
       session: null,
       action: Action.OK,
       user: 'server',
@@ -30,7 +30,7 @@ export class Connect4Server {
   }
 
   private onMessage(ws: WebSocket, data: Data) {
-    const packet: ClientPacket = JSON.parse(data.toString());
+    const packet: Packet = JSON.parse(data.toString());
     console.log(packet);
   }
 }

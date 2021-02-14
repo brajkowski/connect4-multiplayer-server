@@ -1,6 +1,6 @@
 import { Action } from './action';
 
-export interface ClientPacket {
+export interface Packet {
   session: string;
   action: Action;
   user: string;
