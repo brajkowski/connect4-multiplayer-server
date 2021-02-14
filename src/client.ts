@@ -1,5 +1,7 @@
 import WebSocket = require('ws');
 import { Data } from 'ws';
+import { Action } from './model/action';
+import { ClientPacket } from './model/client-packet';
 
 export class Connect4Client {
   private ws: WebSocket;
@@ -17,10 +19,16 @@ export class Connect4Client {
   }
 
   private onOpen() {
-    this.ws.send('hello from client');
+    const packet: ClientPacket = {
+      session: null,
+      action: Action.CREATE_SESSION,
+      user: 'brandon',
+    };
+    this.ws.send(JSON.stringify(packet));
   }
 
   private onMessage(data: Data) {
-    console.log(data);
+    const packet: ClientPacket = JSON.parse(data.toString());
+    console.log(packet);
   }
 }
