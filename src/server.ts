@@ -2,8 +2,6 @@ import WebSocket = require('ws');
 import { Data, Server } from 'ws';
 import { ClientAction } from './model/client-action';
 import { ClientPacket } from './model/client-packet';
-import { ServerAction } from './model/server-action';
-import { ServerPacket } from './model/server-packet';
 import { Session } from './session';
 
 export class Connect4Server {
@@ -29,20 +27,13 @@ export class Connect4Server {
     const incomingPacket: ClientPacket = JSON.parse(data.toString());
     console.log(incomingPacket);
     if (incomingPacket.action === ClientAction.CREATE_SESSION) {
-      const responsePacket = this.createSession(incomingPacket);
-      ws.send(JSON.stringify(responsePacket));
+      this.createSession(ws, incomingPacket);
       return;
     }
-    const responsePacket = this.sessions
-      .get(incomingPacket.session)
-      .handlePacket(incomingPacket);
-    ws.send(JSON.stringify(responsePacket));
+    this.sessions.get(incomingPacket.session).handlePacket(incomingPacket);
   }
 
-  private createSession(packet: ClientPacket): ServerPacket {
-    this.sessions.set(packet.session, new Session(packet.user));
-    return {
-      action: ServerAction.OK,
-    };
+  private createSession(ws: WebSocket, packet: ClientPacket) {
+    this.sessions.set(packet.session, new Session(ws));
   }
 }

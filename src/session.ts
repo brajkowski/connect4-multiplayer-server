@@ -3,26 +3,26 @@ import { ClientAction } from './model/client-action';
 import { ClientPacket } from './model/client-packet';
 import { ServerAction } from './model/server-action';
 import { ServerPacket } from './model/server-packet';
+import WebSocket = require('ws');
 
 export class Session {
   private logic = new BitboardLogic();
   private userMap = new Map<string, Player>();
-  private activePlayer = Player.One;
 
-  constructor(user: string) {
-    this.mapUser(user);
+  constructor(private owner: WebSocket) {
+    const packet: ServerPacket = {
+      action: ServerAction.OK,
+    };
+    this.owner.send(JSON.stringify(packet));
   }
 
-  handlePacket(packet: ClientPacket): ServerPacket {
+  handlePacket(packet: ClientPacket) {
     switch (packet.action) {
       case ClientAction.JOIN_SESSION:
         this.mapUser(packet.user);
       case ClientAction.MOVE:
         this.move(packet.user, packet.column);
     }
-    return {
-      action: ServerAction.OK,
-    };
   }
 
   private move(user: string, column: number) {
