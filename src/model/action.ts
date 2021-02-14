@@ -1,0 +1,10 @@
+export enum Action {
+  OK,
+  CREATE_SESSION,
+  JOIN,
+  OPPONENT_JOIN,
+  MOVE,
+  OPPONENT_MOVE,
+  TURN_ALERT,
+  OPPONENT_TURN_ALERT,
+}
