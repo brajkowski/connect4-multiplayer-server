@@ -39,6 +39,16 @@ export class Connect4Client {
     this.ws.send(JSON.stringify(packet));
   }
 
+  makeMove(column: number) {
+    const packet: ClientPacket = {
+      session: this.session,
+      user: this.user,
+      action: ClientAction.MOVE,
+      column: column,
+    };
+    this.ws.send(JSON.stringify(packet));
+  }
+
   private onMessage(data: Data) {
     const packet: ClientPacket = JSON.parse(data.toString());
     console.log(packet);

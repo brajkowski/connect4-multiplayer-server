@@ -16,3 +16,11 @@ setTimeout(() => {
   owner.createSession(session, 'owner');
   opponent.joinSession(session, 'opponent');
 }, 1000);
+
+setTimeout(() => {
+  owner.makeMove(0);
+}, 2000);
+
+setTimeout(() => {
+  opponent.makeMove(1);
+}, 3000);
