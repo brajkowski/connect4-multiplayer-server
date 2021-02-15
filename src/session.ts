@@ -8,18 +8,20 @@ import WebSocket = require('ws');
 export class Session {
   private logic = new BitboardLogic();
   private playerMap = new Map<string, Player>();
+  private webSocketMap = new Map<WebSocket, Player>();
   private opponent: WebSocket;
   private opponentName: string;
 
   constructor(private owner: WebSocket, private ownerName: string) {
     this.playerMap.set(this.ownerName, Player.One);
+    this.webSocketMap.set(this.owner, Player.One);
     const packet: ServerPacket = {
       action: ServerAction.OK,
     };
     this.owner.send(JSON.stringify(packet));
   }
 
-  handlePacket(packet: ClientPacket) {
+  handlePacket(ws: WebSocket, packet: ClientPacket) {
     switch (packet.action) {
       case ClientAction.MOVE:
         this.move(packet.user, packet.column);
@@ -30,6 +32,7 @@ export class Session {
     this.opponent = opponent;
     this.opponentName = opponentName;
     this.playerMap.set(this.opponentName, Player.Two);
+    this.webSocketMap.set(this.opponent, Player.Two);
     const confirmPacket: ServerPacket = {
       action: ServerAction.OK,
       user: this.ownerName,

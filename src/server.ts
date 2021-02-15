@@ -32,7 +32,9 @@ export class Connect4Server {
         this.opponentJoinSession(ws, incomingPacket);
         break;
       default:
-        this.sessions.get(incomingPacket.session).handlePacket(incomingPacket);
+        this.sessions
+          .get(incomingPacket.session)
+          .handlePacket(ws, incomingPacket);
     }
   }
 
