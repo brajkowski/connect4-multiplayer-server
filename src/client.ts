@@ -1,7 +1,6 @@
 import WebSocket = require('ws');
+import { ClientAction, ClientPacket } from '@brajkowski/connect4-multiplayer-common';
 import { Data } from 'ws';
-import { ClientAction } from './model/client-action';
-import { ClientPacket } from './model/client-packet';
 
 export class Connect4Client {
   private ws: WebSocket;

@@ -1,8 +1,5 @@
+import { ClientAction, ClientPacket, ServerAction, ServerPacket } from '@brajkowski/connect4-multiplayer-common';
 import { BitboardLogic, Player } from '@brajkowski/connect4-web-logic';
-import { ClientAction } from './model/client-action';
-import { ClientPacket } from './model/client-packet';
-import { ServerAction } from './model/server-action';
-import { ServerPacket } from './model/server-packet';
 import WebSocket = require('ws');
 
 export class Session {
