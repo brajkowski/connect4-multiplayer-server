@@ -1,4 +1,9 @@
-import { ClientAction, ClientPacket, ServerAction, ServerPacket } from '@brajkowski/connect4-multiplayer-common';
+import {
+  ClientAction,
+  ClientPacket,
+  ServerAction,
+  ServerPacket,
+} from '@brajkowski/connect4-multiplayer-common';
 import { BitboardLogic, Player } from '@brajkowski/connect4-web-logic';
 import WebSocket = require('ws');
 
@@ -62,8 +67,13 @@ export class Session {
         column,
       };
       this.getOppositeWebSocket().send(JSON.stringify(opponentMovePacket));
+      this.activePlayer = this.getOppositePlayer();
+    } else {
+      const notAllowedPacket: ServerPacket = {
+        action: ServerAction.NOT_ALLOWED,
+      };
+      ws.send(JSON.stringify(notAllowedPacket));
     }
-    this.activePlayer = this.getOppositePlayer();
   }
 
   private getOppositePlayer(): Player {
