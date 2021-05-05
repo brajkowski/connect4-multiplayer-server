@@ -28,7 +28,7 @@
     "typescript": "^4.1.3"
   },
   "dependencies": {
-    "@brajkowski/connect4-multiplayer-common": "^1.0.0-beta.3",
+    "@brajkowski/connect4-multiplayer-common": "^1.0.0-beta.6",
     "@brajkowski/connect4-web-logic": "^1.0.0",
     "ws": "^7.4.2"
   }
