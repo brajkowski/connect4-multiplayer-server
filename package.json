@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",
+    "@types/uuid": "^8.3.0",
     "@types/ws": "^7.4.0",
     "jest": "^26.6.3",
     "ts-jest": "^26.4.4",
@@ -30,6 +31,7 @@
   "dependencies": {
     "@brajkowski/connect4-multiplayer-common": "^1.0.0-beta.6",
     "@brajkowski/connect4-web-logic": "^1.0.0",
+    "uuid": "^8.3.2",
     "ws": "^7.4.2"
   }
 }
