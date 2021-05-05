@@ -60,22 +60,29 @@ export class Session {
 
   private move(ws: WebSocket, column: number) {
     const requestingPlayer: Player = this.webSocketMap.get(ws);
-    if (
-      requestingPlayer === this.activePlayer &&
-      this.logic.canPlaceChip(column)
-    ) {
-      this.logic.placeChip(requestingPlayer, column);
-      const confirmPacket: ServerPacket = {
-        action: ServerAction.OK,
-      };
-      ws.send(JSON.stringify(confirmPacket));
-      const opponentMovePacket: ServerPacket = {
-        action: ServerAction.OPPONENT_MOVE,
-        column,
-      };
-      this.getOppositeWebSocket().send(JSON.stringify(opponentMovePacket));
-      this.activePlayer = this.getOppositePlayer();
-    } else {
+    try {
+      if (
+        requestingPlayer === this.activePlayer &&
+        this.logic.canPlaceChip(column)
+      ) {
+        this.logic.placeChip(requestingPlayer, column);
+        const confirmPacket: ServerPacket = {
+          action: ServerAction.OK,
+        };
+        ws.send(JSON.stringify(confirmPacket));
+        const opponentMovePacket: ServerPacket = {
+          action: ServerAction.OPPONENT_MOVE,
+          column,
+        };
+        this.getOppositeWebSocket().send(JSON.stringify(opponentMovePacket));
+        this.activePlayer = this.getOppositePlayer();
+      } else {
+        const notAllowedPacket: ServerPacket = {
+          action: ServerAction.NOT_ALLOWED,
+        };
+        ws.send(JSON.stringify(notAllowedPacket));
+      }
+    } catch (err) {
       const notAllowedPacket: ServerPacket = {
         action: ServerAction.NOT_ALLOWED,
       };
