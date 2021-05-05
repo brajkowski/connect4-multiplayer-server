@@ -5,6 +5,7 @@ import {
   ServerPacket,
 } from '@brajkowski/connect4-multiplayer-common';
 import { BitboardLogic, Player } from '@brajkowski/connect4-web-logic';
+import { generateSessionName } from './util';
 import WebSocket = require('ws');
 
 export class Session {
@@ -15,6 +16,11 @@ export class Session {
   private opponent: WebSocket;
   private opponentName: string;
   private activePlayer = Player.One;
+  private sessionNm: string;
+
+  public get sessionName(): string {
+    return this.sessionNm;
+  }
 
   constructor(private owner: WebSocket, private ownerName: string) {
     this.playerMap.set(this.ownerName, Player.One);
@@ -24,6 +30,7 @@ export class Session {
       action: ServerAction.OK,
     };
     this.owner.send(JSON.stringify(packet));
+    this.sessionNm = generateSessionName();
   }
 
   handlePacket(ws: WebSocket, packet: ClientPacket) {

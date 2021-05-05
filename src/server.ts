@@ -1,5 +1,10 @@
 import WebSocket = require('ws');
-import { ClientAction, ClientPacket } from '@brajkowski/connect4-multiplayer-common';
+import {
+  ClientAction,
+  ClientPacket,
+  ServerAction,
+  ServerPacket,
+} from '@brajkowski/connect4-multiplayer-common';
 import { Data, Server } from 'ws';
 import { Session } from './session';
 
@@ -38,7 +43,18 @@ export class Connect4Server {
   }
 
   private createSession(ws: WebSocket, packet: ClientPacket) {
-    this.sessions.set(packet.session, new Session(ws, packet.user));
+    const session = new Session(ws, packet.user);
+    const sessionName = session.sessionName;
+    this.sessions.set(sessionName, session);
+    this.sendSessionCreated(ws, sessionName);
+  }
+
+  private sendSessionCreated(ws: WebSocket, sessionName: string) {
+    const packet: ServerPacket = {
+      action: ServerAction.SESSION_CREATED,
+      newSession: sessionName,
+    };
+    ws.send(JSON.stringify(packet));
   }
 
   private opponentJoinSession(ws: WebSocket, packet: ClientPacket) {
