@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "A websocket server that can connect connect 4 game clients together.",
   "scripts": {
-    "build": "tsc",
     "start": "ts-node ./src/index.ts",
     "test": "jest"
   },

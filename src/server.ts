@@ -15,6 +15,7 @@ export class Connect4Server {
   start(port: number) {
     this.wss = new Server({ port });
     this.wss.on('connection', this.onConnection.bind(this));
+    console.log(`Server started listening on port ${port}`);
   }
 
   stop() {
