@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "A websocket server that can connect connect 4 game clients together.",
   "scripts": {
-    "start": "ts-node ./src/index.ts",
+    "build": "tsc",
+    "start:dev": "ts-node ./src/index.ts",
+    "start": "node ./dist/index.js",
     "test": "jest"
   },
   "author": "Brandon Rajkowski",
