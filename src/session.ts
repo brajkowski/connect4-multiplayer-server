@@ -1,10 +1,10 @@
+import { BitboardLogic, Player } from '@brajkowski/connect4-logic';
 import {
   ClientAction,
   ClientPacket,
   ServerAction,
   ServerPacket,
 } from '@brajkowski/connect4-multiplayer-common';
-import { BitboardLogic, Player } from '@brajkowski/connect4-web-logic';
 import { generateSessionName } from './util';
 import WebSocket = require('ws');
 
