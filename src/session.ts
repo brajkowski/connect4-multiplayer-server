@@ -119,7 +119,7 @@ export class Session {
     setTimeout(() => {
       console.log(`Restarting game for session: ${this.sessionName}`);
       this.logic.clear();
-      const startingPlayer = Math.random();
+      const startingPlayer = Math.round(Math.random());
       this.webSocketMap.forEach((player, ws) => {
         const restartPacket: ServerPacket = {
           action: ServerAction.GAME_RESTART,
