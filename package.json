@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@brajkowski/connect4-logic": "^1.0.3",
-    "@brajkowski/connect4-multiplayer-common": "^1.0.0-beta.6",
+    "@brajkowski/connect4-multiplayer-common": "^1.0.0-beta.8",
     "uuid": "^8.3.2",
     "ws": "^7.4.2"
   }
