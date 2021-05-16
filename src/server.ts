@@ -36,6 +36,9 @@ export class Connect4Server {
       case ClientAction.JOIN_SESSION:
         this.opponentJoinSession(ws, incomingPacket);
         break;
+      case ClientAction.QUIT:
+        this.opponentQuit(ws, incomingPacket);
+        break;
       default:
         this.sessions
           .get(incomingPacket.session)
@@ -60,5 +63,10 @@ export class Connect4Server {
 
   private opponentJoinSession(ws: WebSocket, packet: ClientPacket) {
     this.sessions.get(packet.session).opponentJoin(ws, packet.user);
+  }
+
+  private opponentQuit(ws: WebSocket, packet: ClientPacket) {
+    this.sessions.get(packet.session).opponentQuit(ws);
+    this.sessions.delete(packet.session);
   }
 }

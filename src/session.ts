@@ -54,6 +54,16 @@ export class Session {
     this.owner.send(JSON.stringify(opponentJoinedPacket));
   }
 
+  opponentQuit(quittingWebsocket: WebSocket) {
+    const quittingPlayer = this.webSocketMap.get(quittingWebsocket);
+    const alertPlayer = quittingPlayer === Player.One ? Player.Two : Player.One;
+    const alertPlayerWebsocket = this.reverseWebSocketMap.get(alertPlayer);
+    const quitAlertPacket: ServerPacket = {
+      action: ServerAction.OPPONENT_QUIT,
+    };
+    alertPlayerWebsocket.send(JSON.stringify(quitAlertPacket));
+  }
+
   private move(ws: WebSocket, column: number) {
     const requestingPlayer: Player = this.webSocketMap.get(ws);
     try {
