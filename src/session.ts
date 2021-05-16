@@ -26,10 +26,6 @@ export class Session {
     this.playerMap.set(this.ownerName, Player.One);
     this.webSocketMap.set(this.owner, Player.One);
     this.reverseWebSocketMap.set(Player.One, this.owner);
-    const packet: ServerPacket = {
-      action: ServerAction.OK,
-    };
-    this.owner.send(JSON.stringify(packet));
     this.sessionNm = generateSessionName();
   }
 
@@ -47,7 +43,7 @@ export class Session {
     this.webSocketMap.set(this.opponent, Player.Two);
     this.reverseWebSocketMap.set(Player.Two, this.opponent);
     const confirmPacket: ServerPacket = {
-      action: ServerAction.OK,
+      action: ServerAction.JOINED_SESSION,
       user: this.ownerName,
     };
     this.opponent.send(JSON.stringify(confirmPacket));
@@ -66,10 +62,6 @@ export class Session {
         this.logic.canPlaceChip(column)
       ) {
         this.logic.placeChip(requestingPlayer, column);
-        const confirmPacket: ServerPacket = {
-          action: ServerAction.OK,
-        };
-        ws.send(JSON.stringify(confirmPacket));
         const opponentMovePacket: ServerPacket = {
           action: ServerAction.OPPONENT_MOVE,
           column,
