@@ -9,6 +9,7 @@ import { generateSessionName } from './util';
 import WebSocket = require('ws');
 
 export class Session {
+  private readonly restartDelay: number = 5000;
   private logic = new BitboardLogic();
   private playerMap = new Map<string, Player>();
   private webSocketMap = new Map<WebSocket, Player>();
@@ -90,6 +91,9 @@ export class Session {
       };
       ws.send(JSON.stringify(notAllowedPacket));
     }
+    if (this.isGameFinished()) {
+      this.restartWithDelay();
+    }
   }
 
   private getOppositePlayer(): Player {
@@ -101,5 +105,28 @@ export class Session {
 
   private getOppositeWebSocket(): WebSocket {
     return this.reverseWebSocketMap.get(this.getOppositePlayer());
+  }
+
+  private isGameFinished(): boolean {
+    return (
+      this.logic.boardIsFull() ||
+      this.logic.didWin(Player.One) ||
+      this.logic.didWin(Player.Two)
+    );
+  }
+
+  private restartWithDelay() {
+    setTimeout(() => {
+      console.log(`Restarting game for session: ${this.sessionName}`);
+      this.logic.clear();
+      const startingPlayer = Math.random();
+      this.webSocketMap.forEach((player, ws) => {
+        const restartPacket: ServerPacket = {
+          action: ServerAction.GAME_RESTART,
+          thisClientStartsFirst: player == startingPlayer,
+        };
+        ws.send(JSON.stringify(restartPacket));
+      });
+    }, this.restartDelay);
   }
 }
