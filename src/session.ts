@@ -62,7 +62,7 @@ export class Session {
     const quitAlertPacket: ServerPacket = {
       action: ServerAction.OPPONENT_QUIT,
     };
-    alertPlayerWebsocket.send(JSON.stringify(quitAlertPacket));
+    alertPlayerWebsocket?.send(JSON.stringify(quitAlertPacket));
   }
 
   private move(ws: WebSocket, column: number) {
