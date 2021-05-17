@@ -29,10 +29,21 @@ export class Connect4Server {
   private onMessage(ws: WebSocket, data: Data) {
     const incomingPacket: ClientPacket = JSON.parse(data.toString());
     console.log(incomingPacket);
+    if (incomingPacket.action === ClientAction.CREATE_SESSION) {
+      this.createSession(ws, incomingPacket);
+      return;
+    }
+    if (
+      incomingPacket.session === undefined ||
+      !this.sessions.has(incomingPacket.session)
+    ) {
+      const packet: ServerPacket = {
+        action: ServerAction.SESSION_NOT_FOUND,
+      };
+      ws.send(JSON.stringify(packet));
+      return;
+    }
     switch (incomingPacket.action) {
-      case ClientAction.CREATE_SESSION:
-        this.createSession(ws, incomingPacket);
-        break;
       case ClientAction.JOIN_SESSION:
         this.opponentJoinSession(ws, incomingPacket);
         break;
