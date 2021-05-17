@@ -37,6 +37,10 @@ export class Session {
     }
   }
 
+  isSessionFull(): boolean {
+    return this.playerMap.size >= 2;
+  }
+
   opponentJoin(opponent: WebSocket, opponentName: string) {
     this.opponent = opponent;
     this.opponentName = opponentName;

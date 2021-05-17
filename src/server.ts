@@ -81,7 +81,15 @@ export class Connect4Server {
   }
 
   private opponentJoinSession(ws: WebSocket, packet: ClientPacket) {
-    this.sessions.get(packet.session).opponentJoin(ws, packet.user);
+    const session = this.sessions.get(packet.session);
+    if (session.isSessionFull()) {
+      const packet: ServerPacket = {
+        action: ServerAction.SESSION_NOT_FOUND,
+      };
+      ws.send(JSON.stringify(packet));
+      return;
+    }
+    session.opponentJoin(ws, packet.user);
   }
 
   private opponentQuit(ws: WebSocket, packet: ClientPacket) {
