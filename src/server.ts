@@ -27,7 +27,12 @@ export class Connect4Server {
   }
 
   private onMessage(ws: WebSocket, data: Data) {
-    const incomingPacket: ClientPacket = JSON.parse(data.toString());
+    let incomingPacket: ClientPacket;
+    try {
+      incomingPacket = JSON.parse(data.toString());
+    } catch (err) {
+      return;
+    }
     console.log(incomingPacket);
     if (incomingPacket.action === ClientAction.CREATE_SESSION) {
       this.createSession(ws, incomingPacket);
