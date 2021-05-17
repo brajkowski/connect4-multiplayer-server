@@ -63,7 +63,10 @@ export class Connect4Server {
   }
 
   private createSession(ws: WebSocket, packet: ClientPacket) {
-    const session = new Session(ws, packet.user);
+    let session: Session;
+    do {
+      session = new Session(ws, packet.user);
+    } while (this.sessions.has(session.sessionName)); // Incase of UUID collision.
     const sessionName = session.sessionName;
     this.sessions.set(sessionName, session);
     this.sendSessionCreated(ws, sessionName);
