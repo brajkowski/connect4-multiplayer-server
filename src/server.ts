@@ -1,4 +1,3 @@
-import WebSocket = require('ws');
 import {
   ClientAction,
   ClientPacket,
@@ -7,6 +6,7 @@ import {
 } from '@brajkowski/connect4-multiplayer-common';
 import { Data, Server } from 'ws';
 import { Session } from './session';
+import { WebSocketWithStatus } from './web-socket';
 
 export class Connect4Server {
   private wss: Server;
@@ -22,11 +22,11 @@ export class Connect4Server {
     this.wss.close();
   }
 
-  private onConnection(ws: WebSocket) {
+  private onConnection(ws: WebSocketWithStatus) {
     ws.on('message', (data) => this.onMessage(ws, data));
   }
 
-  private onMessage(ws: WebSocket, data: Data) {
+  private onMessage(ws: WebSocketWithStatus, data: Data) {
     let incomingPacket: ClientPacket;
     try {
       incomingPacket = JSON.parse(data.toString());
@@ -62,7 +62,7 @@ export class Connect4Server {
     }
   }
 
-  private createSession(ws: WebSocket, packet: ClientPacket) {
+  private createSession(ws: WebSocketWithStatus, packet: ClientPacket) {
     let session: Session;
     do {
       session = new Session(ws, packet.user);
@@ -72,7 +72,7 @@ export class Connect4Server {
     this.sendSessionCreated(ws, sessionName);
   }
 
-  private sendSessionCreated(ws: WebSocket, sessionName: string) {
+  private sendSessionCreated(ws: WebSocketWithStatus, sessionName: string) {
     const packet: ServerPacket = {
       action: ServerAction.SESSION_CREATED,
       newSession: sessionName,
@@ -80,7 +80,7 @@ export class Connect4Server {
     ws.send(JSON.stringify(packet));
   }
 
-  private opponentJoinSession(ws: WebSocket, packet: ClientPacket) {
+  private opponentJoinSession(ws: WebSocketWithStatus, packet: ClientPacket) {
     const session = this.sessions.get(packet.session);
     if (session.isSessionFull()) {
       const packet: ServerPacket = {
@@ -92,7 +92,7 @@ export class Connect4Server {
     session.opponentJoin(ws, packet.user);
   }
 
-  private opponentQuit(ws: WebSocket, packet: ClientPacket) {
+  private opponentQuit(ws: WebSocketWithStatus, packet: ClientPacket) {
     this.sessions.get(packet.session).opponentQuit(ws);
     this.sessions.delete(packet.session);
   }

@@ -6,15 +6,15 @@ import {
   ServerPacket,
 } from '@brajkowski/connect4-multiplayer-common';
 import { generateSessionName } from './util';
-import WebSocket = require('ws');
+import { WebSocketWithStatus } from './web-socket';
 
 export class Session {
   private readonly restartDelay: number = 5000;
   private logic = new BitboardLogic();
   private playerMap = new Map<string, Player>();
-  private webSocketMap = new Map<WebSocket, Player>();
-  private reverseWebSocketMap = new Map<Player, WebSocket>();
-  private opponent: WebSocket;
+  private webSocketMap = new Map<WebSocketWithStatus, Player>();
+  private reverseWebSocketMap = new Map<Player, WebSocketWithStatus>();
+  private opponent: WebSocketWithStatus;
   private opponentName: string;
   private activePlayer = Player.One;
   private sessionNm: string;
@@ -23,14 +23,14 @@ export class Session {
     return this.sessionNm;
   }
 
-  constructor(private owner: WebSocket, private ownerName: string) {
+  constructor(private owner: WebSocketWithStatus, private ownerName: string) {
     this.playerMap.set(this.ownerName, Player.One);
     this.webSocketMap.set(this.owner, Player.One);
     this.reverseWebSocketMap.set(Player.One, this.owner);
     this.sessionNm = generateSessionName();
   }
 
-  handlePacket(ws: WebSocket, packet: ClientPacket) {
+  handlePacket(ws: WebSocketWithStatus, packet: ClientPacket) {
     switch (packet.action) {
       case ClientAction.MOVE:
         this.move(ws, packet.column);
@@ -41,7 +41,7 @@ export class Session {
     return this.playerMap.size >= 2;
   }
 
-  opponentJoin(opponent: WebSocket, opponentName: string) {
+  opponentJoin(opponent: WebSocketWithStatus, opponentName: string) {
     this.opponent = opponent;
     this.opponentName = opponentName;
     this.playerMap.set(this.opponentName, Player.Two);
@@ -59,7 +59,7 @@ export class Session {
     this.owner.send(JSON.stringify(opponentJoinedPacket));
   }
 
-  opponentQuit(quittingWebsocket: WebSocket) {
+  opponentQuit(quittingWebsocket: WebSocketWithStatus) {
     const quittingPlayer = this.webSocketMap.get(quittingWebsocket);
     const alertPlayer = quittingPlayer === Player.One ? Player.Two : Player.One;
     const alertPlayerWebsocket = this.reverseWebSocketMap.get(alertPlayer);
@@ -69,7 +69,7 @@ export class Session {
     alertPlayerWebsocket?.send(JSON.stringify(quitAlertPacket));
   }
 
-  private move(ws: WebSocket, column: number) {
+  private move(ws: WebSocketWithStatus, column: number) {
     const requestingPlayer: Player = this.webSocketMap.get(ws);
     try {
       if (
@@ -107,7 +107,7 @@ export class Session {
     return Player.One;
   }
 
-  private getOppositeWebSocket(): WebSocket {
+  private getOppositeWebSocket(): WebSocketWithStatus {
     return this.reverseWebSocketMap.get(this.getOppositePlayer());
   }
 
