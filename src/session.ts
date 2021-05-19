@@ -10,6 +10,8 @@ import { WebSocketWithStatus } from './web-socket';
 
 export class Session {
   private readonly restartDelay: number = 5000;
+  private readonly pingRate: number = 30000;
+  private readonly closeSessionAfterQuitDelay: number = 5000;
   private logic = new BitboardLogic();
   private playerMap = new Map<string, Player>();
   private webSocketMap = new Map<WebSocketWithStatus, Player>();
@@ -18,16 +20,23 @@ export class Session {
   private opponentName: string;
   private activePlayer = Player.One;
   private sessionNm: string;
+  private pingInterval: NodeJS.Timeout;
 
   public get sessionName(): string {
     return this.sessionNm;
   }
 
-  constructor(private owner: WebSocketWithStatus, private ownerName: string) {
+  constructor(
+    private owner: WebSocketWithStatus,
+    private ownerName: string,
+    private onSessionClosed?: (sessionName: string) => any
+  ) {
     this.playerMap.set(this.ownerName, Player.One);
     this.webSocketMap.set(this.owner, Player.One);
     this.reverseWebSocketMap.set(Player.One, this.owner);
     this.sessionNm = generateSessionName();
+    this.owner.isAlive = true;
+    this.pingClients();
   }
 
   handlePacket(ws: WebSocketWithStatus, packet: ClientPacket) {
@@ -43,6 +52,7 @@ export class Session {
 
   opponentJoin(opponent: WebSocketWithStatus, opponentName: string) {
     this.opponent = opponent;
+    this.opponent.isAlive = true;
     this.opponentName = opponentName;
     this.playerMap.set(this.opponentName, Player.Two);
     this.webSocketMap.set(this.opponent, Player.Two);
@@ -60,6 +70,7 @@ export class Session {
   }
 
   opponentQuit(quittingWebsocket: WebSocketWithStatus) {
+    if (!this.webSocketMap.has(quittingWebsocket)) return;
     const quittingPlayer = this.webSocketMap.get(quittingWebsocket);
     const alertPlayer = quittingPlayer === Player.One ? Player.Two : Player.One;
     const alertPlayerWebsocket = this.reverseWebSocketMap.get(alertPlayer);
@@ -67,6 +78,33 @@ export class Session {
       action: ServerAction.OPPONENT_QUIT,
     };
     alertPlayerWebsocket?.send(JSON.stringify(quitAlertPacket));
+    setTimeout(() => {
+      this.closeSession();
+    }, this.closeSessionAfterQuitDelay);
+  }
+
+  private pingClients() {
+    this.pingInterval = setInterval(() => {
+      this.webSocketMap.forEach((player, ws) => {
+        if (ws.isAlive) {
+          ws.isAlive = false;
+          ws.ping();
+        } else {
+          this.closeSession();
+        }
+      });
+    }, this.pingRate);
+  }
+
+  private closeSession() {
+    clearInterval(this.pingInterval);
+    this.webSocketMap.forEach((player, ws) => {
+      const sessionEndedPacket: ServerPacket = {
+        action: ServerAction.SESSION_ENDED,
+      };
+      ws.send(JSON.stringify(sessionEndedPacket));
+    });
+    this.onSessionClosed?.(this.sessionName);
   }
 
   private move(ws: WebSocketWithStatus, column: number) {

@@ -15,7 +15,7 @@ export class Connect4Server {
   start(port: number) {
     this.wss = new Server({ port });
     this.wss.on('connection', this.onConnection.bind(this));
-    console.log(`Server started listening on port ${port}`);
+    console.log(`Server started listening on port: ${port}`);
   }
 
   stop() {
@@ -23,7 +23,12 @@ export class Connect4Server {
   }
 
   private onConnection(ws: WebSocketWithStatus) {
+    ws.on('pong', () => this.onPong(ws));
     ws.on('message', (data) => this.onMessage(ws, data));
+  }
+
+  private onPong(ws: WebSocketWithStatus) {
+    ws.isAlive = true;
   }
 
   private onMessage(ws: WebSocketWithStatus, data: Data) {
@@ -65,11 +70,12 @@ export class Connect4Server {
   private createSession(ws: WebSocketWithStatus, packet: ClientPacket) {
     let session: Session;
     do {
-      session = new Session(ws, packet.user);
+      session = new Session(ws, packet.user, this.deleteSession.bind(this));
     } while (this.sessions.has(session.sessionName)); // Incase of UUID collision.
     const sessionName = session.sessionName;
     this.sessions.set(sessionName, session);
     this.sendSessionCreated(ws, sessionName);
+    console.log(`Created session: ${sessionName}`);
   }
 
   private sendSessionCreated(ws: WebSocketWithStatus, sessionName: string) {
@@ -94,6 +100,10 @@ export class Connect4Server {
 
   private opponentQuit(ws: WebSocketWithStatus, packet: ClientPacket) {
     this.sessions.get(packet.session).opponentQuit(ws);
-    this.sessions.delete(packet.session);
+  }
+
+  private deleteSession(sessionName: string) {
+    this.sessions.delete(sessionName);
+    console.log(`Deleted session: ${sessionName}`);
   }
 }
