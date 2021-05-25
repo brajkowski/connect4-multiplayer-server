@@ -126,12 +126,14 @@ export class Session {
           action: ServerAction.NOT_ALLOWED,
         };
         ws.send(JSON.stringify(notAllowedPacket));
+        return;
       }
     } catch (err) {
       const notAllowedPacket: ServerPacket = {
         action: ServerAction.NOT_ALLOWED,
       };
       ws.send(JSON.stringify(notAllowedPacket));
+      return;
     }
     if (this.isGameFinished()) {
       this.restartWithDelay();
