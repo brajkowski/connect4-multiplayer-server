@@ -5,6 +5,7 @@ import {
   ServerPacket,
 } from '@brajkowski/connect4-multiplayer-common';
 import { Data, Server } from 'ws';
+import { logger } from '.';
 import { Session } from './session';
 import { WebSocketWithStatus } from './web-socket';
 
@@ -15,11 +16,12 @@ export class Connect4Server {
   start(port: number) {
     this.wss = new Server({ port });
     this.wss.on('connection', this.onConnection.bind(this));
-    console.log(`Server started listening on port: ${port}`);
+    logger.info(`Server started listening on port: ${port}`);
   }
 
   stop() {
     this.wss.close();
+    logger.info('Server stopped');
   }
 
   private onConnection(ws: WebSocketWithStatus) {
@@ -29,6 +31,7 @@ export class Connect4Server {
 
   private onPong(ws: WebSocketWithStatus) {
     ws.isAlive = true;
+    logger.debug('Pong received');
   }
 
   private onMessage(ws: WebSocketWithStatus, data: Data) {
@@ -36,9 +39,10 @@ export class Connect4Server {
     try {
       incomingPacket = JSON.parse(data.toString());
     } catch (err) {
+      logger.warn('Invalid packet received');
       return;
     }
-    console.log(incomingPacket);
+    logger.info('Valid packet received', [incomingPacket]);
     if (incomingPacket.action === ClientAction.CREATE_SESSION) {
       this.createSession(ws, incomingPacket);
       return;
@@ -75,7 +79,7 @@ export class Connect4Server {
     const sessionName = session.sessionName;
     this.sessions.set(sessionName, session);
     this.sendSessionCreated(ws, sessionName);
-    console.log(`Created session: ${sessionName}`);
+    logger.info(`Created session: ${sessionName}`);
   }
 
   private sendSessionCreated(ws: WebSocketWithStatus, sessionName: string) {
@@ -104,6 +108,6 @@ export class Connect4Server {
 
   private deleteSession(sessionName: string) {
     this.sessions.delete(sessionName);
-    console.log(`Deleted session: ${sessionName}`);
+    logger.info(`Deleted session: ${sessionName}`);
   }
 }

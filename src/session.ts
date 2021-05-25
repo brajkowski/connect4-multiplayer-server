@@ -5,6 +5,7 @@ import {
   ServerAction,
   ServerPacket,
 } from '@brajkowski/connect4-multiplayer-common';
+import { logger } from '.';
 import { generateSessionName } from './util';
 import { WebSocketWithStatus } from './web-socket';
 
@@ -89,7 +90,11 @@ export class Session {
         if (ws.isAlive) {
           ws.isAlive = false;
           ws.ping();
+          logger.debug(`Ping sent for session: ${this.sessionName}`);
         } else {
+          logger.info(
+            `Closing session due to missed pong: ${this.sessionName}`
+          );
           this.closeSession();
         }
       });
@@ -161,7 +166,7 @@ export class Session {
 
   private restartWithDelay() {
     setTimeout(() => {
-      console.log(`Restarting game for session: ${this.sessionName}`);
+      logger.info(`Restarting game for session: ${this.sessionName}`);
       this.logic.clear();
       this.activePlayer = Math.round(Math.random());
       this.webSocketMap.forEach((player, ws) => {
