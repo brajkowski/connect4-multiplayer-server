@@ -20,6 +20,7 @@ channels:
           - $ref: '#/components/messages/createSession'
           - $ref: '#/components/messages/joinSession'
           - $ref: '#/components/messages/move'
+          - $ref: '#/components/messages/quit'
 
 components:
   messages:
@@ -38,6 +39,11 @@ components:
       description: 'Client can request to drop a chip into a column'
       payload:
         $ref: '#/components/schemas/move'
+    quit:
+      summary: Gracefully exit the multiplayer session
+      description: Client can alert the server that it is leaving the session
+      payload:
+        $ref: '#/components/schemas/quit'
 
   schemas:
     column:
@@ -125,3 +131,17 @@ components:
         - session
         - user
         - column
+    quit:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/clientAction'
+          const: 3
+        session:
+          $ref: '#/components/schemas/session'
+        user:
+          $ref: '#/components/schemas/clientUser'
+      required:
+        - action
+        - session
+        - user
