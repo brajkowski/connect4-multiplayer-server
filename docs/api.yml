@@ -1,0 +1,127 @@
+asyncapi: 2.0.0
+
+info:
+  title: Connect 4 Multiplayer API
+  version: '1.0.0'
+  description: 'TODO: Markdown description.'
+
+servers:
+  public:
+    url: br-connect-4-mp-server.herokuapp.com
+    protocol: wss
+    description: 'TODO: Server description.'
+
+channels:
+  /:
+    publish:
+      description: Send messages to the API
+      message:
+        oneOf:
+          - $ref: '#/components/messages/createSession'
+          - $ref: '#/components/messages/joinSession'
+          - $ref: '#/components/messages/move'
+
+components:
+  messages:
+    createSession:
+      summary: Create a new multiplayer session
+      description: Client can request a new session to be created on the server
+      payload:
+        $ref: '#/components/schemas/createSession'
+    joinSession:
+      summary: Join an existing multiplayer session
+      description: Client can request to join an existing session based on the session code
+      payload:
+        $ref: '#/components/schemas/joinSession'
+    move:
+      summary: Place a chip in a specific column
+      description: 'Client can request to drop a chip into a column'
+      payload:
+        $ref: '#/components/schemas/move'
+
+  schemas:
+    column:
+      type: integer
+      description: The zero-based, game-board column index
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+    clientUser:
+      type: string
+      description: The client username
+      example: xXClientUser21Xx
+    opponentUser:
+      type: string
+      description: The opponent's username
+      example: Opp0nentUser04
+    session:
+      type: string
+      description: The server-generated session code
+      example: a1b12
+    clientAction:
+      type: integer
+      description: The client action code
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+    serverAction:
+      type: integer
+      description: The server action code
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+    createSession:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/clientAction'
+          const: 0
+        user:
+          $ref: '#/components/schemas/clientUser'
+      required:
+        - action
+        - user
+    joinSession:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/clientAction'
+          const: 1
+        session:
+          $ref: '#/components/schemas/session'
+        user:
+          $ref: '#/components/schemas/clientUser'
+      required:
+        - action
+        - session
+        - user
+    move:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/clientAction'
+          const: 2
+        session:
+          $ref: '#/components/schemas/session'
+        user:
+          $ref: '#/components/schemas/clientUser'
+        column:
+          $ref: '#/components/schemas/column'
+      required:
+        - action
+        - session
+        - user
+        - column
