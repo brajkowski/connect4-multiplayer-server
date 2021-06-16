@@ -27,6 +27,7 @@ channels:
         oneOf:
           - $ref: '#/components/messages/opponentJoin'
           - $ref: '#/components/messages/opponentMove'
+          - $ref: '#/components/messages/sessionCreated'
 
 components:
   messages:
@@ -60,6 +61,11 @@ components:
       description: Server will alert clients that the opponent has dropped a chip into a column
       payload:
         $ref: '#/components/schemas/opponentMove'
+    sessionCreated:
+      summary: The requested multiplayer session has been created
+      description: Server will alert client that the requested multiplayer session has been created and will provide the session name
+      payload:
+        $ref: '#/components/schemas/sessionCreated'
 
   schemas:
     column:
@@ -183,3 +189,14 @@ components:
       required:
         - action
         - column
+    sessionCreated:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/serverAction'
+          const: 3
+        newSession:
+          $ref: '#/components/schemas/session'
+      required:
+        - action
+        - newSession
