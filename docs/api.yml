@@ -26,6 +26,7 @@ channels:
       message:
         oneOf:
           - $ref: '#/components/messages/opponentJoin'
+          - $ref: '#/components/messages/opponentMove'
 
 components:
   messages:
@@ -54,6 +55,11 @@ components:
       description: Server will alert clients when an opponent has joined the same multiplayer session
       payload:
         $ref: '#/components/schemas/opponentJoin'
+    opponentMove:
+      summary: The opponent has placed a chip in a specific column
+      description: Server will alert clients that the opponent has dropped a chip into a column
+      payload:
+        $ref: '#/components/schemas/opponentMove'
 
   schemas:
     column:
@@ -166,3 +172,14 @@ components:
       required:
         - action
         - user
+    opponentMove:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/serverAction'
+          const: 2
+        column:
+          $ref: '#/components/schemas/column'
+      required:
+        - action
+        - column
