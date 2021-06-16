@@ -21,6 +21,11 @@ channels:
           - $ref: '#/components/messages/joinSession'
           - $ref: '#/components/messages/move'
           - $ref: '#/components/messages/quit'
+    subscribe:
+      description: Receive messages from the API
+      message:
+        oneOf:
+          - $ref: '#/components/messages/opponentJoin'
 
 components:
   messages:
@@ -44,6 +49,11 @@ components:
       description: Client can alert the server that it is leaving the session
       payload:
         $ref: '#/components/schemas/quit'
+    opponentJoin:
+      summary: An opponent has joined the multiplayer session
+      description: Server will alert clients when an opponent has joined the same multiplayer session
+      payload:
+        $ref: '#/components/schemas/opponentJoin'
 
   schemas:
     column:
@@ -144,4 +154,15 @@ components:
       required:
         - action
         - session
+        - user
+    opponentJoin:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/serverAction'
+          const: 1
+        user:
+          $ref: '#/components/schemas/opponentUser'
+      required:
+        - action
         - user
