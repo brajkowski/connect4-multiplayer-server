@@ -29,6 +29,7 @@ channels:
           - $ref: '#/components/messages/opponentMove'
           - $ref: '#/components/messages/sessionCreated'
           - $ref: '#/components/messages/joinedSession'
+          - $ref: '#/components/messages/sessionNotFound'
 
 components:
   messages:
@@ -72,6 +73,11 @@ components:
       description: After the client successfully joins a session the server returns a confirmation with the opponent's username
       payload:
         $ref: '#/components/schemas/joinedSession'
+    sessionNotFound:
+      summary: The requested session could not be found, or the packet could not be routed to the assigned session
+      description: When the client requests to join a session that does not exist, or tries to send a packet to a session that does not exist, the server responds with this action
+      payload:
+        $ref: '#/components/schemas/sessionNotFound'
 
   schemas:
     column:
@@ -217,3 +223,11 @@ components:
       required:
         - action
         - user
+    sessionNotFound:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/serverAction'
+          const: 5
+      required:
+        - action
