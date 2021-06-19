@@ -32,6 +32,7 @@ channels:
           - $ref: '#/components/messages/sessionNotFound'
           - $ref: '#/components/messages/opponentQuit'
           - $ref: '#/components/messages/gameRestart'
+          - $ref: '#/components/messages/sessionEnded'
 
 components:
   messages:
@@ -90,6 +91,11 @@ components:
       description: After a game has finished, the server will automatically restart the game and randomly assign the client or opponent to go first
       payload:
         $ref: '#/components/schemas/gameRestart'
+    sessionEnded:
+      summary: The multiplayer session is closed and no longer valid
+      description: The server will close multiplayer sessions after clients leave the session or after a period of missed server pings
+      payload:
+        $ref: '#/components/schemas/sessionEnded'
 
   schemas:
     column:
@@ -262,3 +268,11 @@ components:
       required:
         - action
         - thisClientStartsFirst
+    sessionEnded:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/serverAction'
+          const: 8
+      required:
+        - action
