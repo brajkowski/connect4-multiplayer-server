@@ -28,6 +28,7 @@ channels:
           - $ref: '#/components/messages/opponentJoin'
           - $ref: '#/components/messages/opponentMove'
           - $ref: '#/components/messages/sessionCreated'
+          - $ref: '#/components/messages/joinedSession'
 
 components:
   messages:
@@ -66,6 +67,11 @@ components:
       description: Server will alert client that the requested multiplayer session has been created and will provide the session name
       payload:
         $ref: '#/components/schemas/sessionCreated'
+    joinedSession:
+      summary: The client has successfully joined the requested session
+      description: After the client successfully joins a session the server returns a confirmation with the opponent's username
+      payload:
+        $ref: '#/components/schemas/joinedSession'
 
   schemas:
     column:
@@ -200,3 +206,14 @@ components:
       required:
         - action
         - newSession
+    joinedSession:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/serverAction'
+          const: 4
+        user:
+          $ref: '#/components/schemas/opponentUser'
+      required:
+        - action
+        - user
