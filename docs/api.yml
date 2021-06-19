@@ -30,6 +30,7 @@ channels:
           - $ref: '#/components/messages/sessionCreated'
           - $ref: '#/components/messages/joinedSession'
           - $ref: '#/components/messages/sessionNotFound'
+          - $ref: '#/components/messages/opponentQuit'
 
 components:
   messages:
@@ -78,6 +79,11 @@ components:
       description: When the client requests to join a session that does not exist, or tries to send a packet to a session that does not exist, the server responds with this action
       payload:
         $ref: '#/components/schemas/sessionNotFound'
+    opponentQuit:
+      summary: The opponent has quit the session
+      description: The server will alert the client when the opponent has gracefully exited the session
+      payload:
+        $ref: '#/components/schemas/opponentQuit'
 
   schemas:
     column:
@@ -229,5 +235,13 @@ components:
         action:
           $ref: '#/components/schemas/serverAction'
           const: 5
+      required:
+        - action
+    opponentQuit:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/serverAction'
+          const: 6
       required:
         - action
