@@ -19,6 +19,13 @@ const port = +(process.env.PORT || '8080');
 
 app.use(express.static(__dirname + '/public'));
 
+app.use((req, res, next) => {
+  if (req.path !== '/') {
+    return res.redirect('/');
+  }
+  next();
+});
+
 httpServer.listen(port, () => {
   connect4Server.start(httpServer);
   logger.info(`Server started listening on port: ${port}`);
