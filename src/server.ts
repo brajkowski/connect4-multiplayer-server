@@ -4,6 +4,7 @@ import {
   ServerAction,
   ServerPacket,
 } from '@brajkowski/connect4-multiplayer-common';
+import http from 'http';
 import { Data, Server } from 'ws';
 import { logger } from '.';
 import { Session } from './session';
@@ -13,10 +14,9 @@ export class Connect4Server {
   private wss: Server;
   private sessions: Map<string, Session> = new Map();
 
-  start(port: number) {
-    this.wss = new Server({ port });
+  start(server: http.Server) {
+    this.wss = new Server({ server });
     this.wss.on('connection', this.onConnection.bind(this));
-    logger.info(`Server started listening on port: ${port}`);
   }
 
   stop() {
