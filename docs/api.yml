@@ -1,0 +1,281 @@
+asyncapi: 2.0.0
+
+info:
+  title: Connect 4 Multiplayer API
+  version: '1.0.0'
+  description: 'A websocket server that powers the multiplayer on https://br-connect-4.herokuapp.com/'
+  contact:
+    name: 'Open a GitHub Issue'
+    url: https://github.com/brajkowski/connect4-multiplayer-server/issues
+
+servers:
+  public:
+    url: br-connect-4-mp-server.herokuapp.com
+    protocol: wss
+    description: 'Free-tier Heroku dyno (may experience delays if dyno is sleeping)'
+
+channels:
+  /:
+    publish:
+      description: Send messages to the API
+      message:
+        oneOf:
+          - $ref: '#/components/messages/createSession'
+          - $ref: '#/components/messages/joinSession'
+          - $ref: '#/components/messages/move'
+          - $ref: '#/components/messages/quit'
+    subscribe:
+      description: Receive messages from the API
+      message:
+        oneOf:
+          - $ref: '#/components/messages/opponentJoin'
+          - $ref: '#/components/messages/opponentMove'
+          - $ref: '#/components/messages/sessionCreated'
+          - $ref: '#/components/messages/joinedSession'
+          - $ref: '#/components/messages/sessionNotFound'
+          - $ref: '#/components/messages/opponentQuit'
+          - $ref: '#/components/messages/gameRestart'
+          - $ref: '#/components/messages/sessionEnded'
+
+components:
+  messages:
+    createSession:
+      summary: Create a new multiplayer session
+      description: Client can request a new session to be created on the server
+      payload:
+        $ref: '#/components/schemas/createSession'
+    joinSession:
+      summary: Join an existing multiplayer session
+      description: Client can request to join an existing session based on the session code
+      payload:
+        $ref: '#/components/schemas/joinSession'
+    move:
+      summary: Place a chip in a specific column
+      description: 'Client can request to drop a chip into a column'
+      payload:
+        $ref: '#/components/schemas/move'
+    quit:
+      summary: Gracefully exit the multiplayer session
+      description: Client can alert the server that it is leaving the session
+      payload:
+        $ref: '#/components/schemas/quit'
+    opponentJoin:
+      summary: An opponent has joined the multiplayer session
+      description: Server will alert clients when an opponent has joined the same multiplayer session
+      payload:
+        $ref: '#/components/schemas/opponentJoin'
+    opponentMove:
+      summary: The opponent has placed a chip in a specific column
+      description: Server will alert clients that the opponent has dropped a chip into a column
+      payload:
+        $ref: '#/components/schemas/opponentMove'
+    sessionCreated:
+      summary: The requested multiplayer session has been created
+      description: Server will alert client that the requested multiplayer session has been created and will provide the session name
+      payload:
+        $ref: '#/components/schemas/sessionCreated'
+    joinedSession:
+      summary: The client has successfully joined the requested session
+      description: After the client successfully joins a session the server returns a confirmation with the opponent's username
+      payload:
+        $ref: '#/components/schemas/joinedSession'
+    sessionNotFound:
+      summary: The requested session could not be found, or the packet could not be routed to the assigned session
+      description: When the client requests to join a session that does not exist, or tries to send a packet to a session that does not exist, the server responds with this action
+      payload:
+        $ref: '#/components/schemas/sessionNotFound'
+    opponentQuit:
+      summary: The opponent has quit the session
+      description: The server will alert the client when the opponent has gracefully exited the session
+      payload:
+        $ref: '#/components/schemas/opponentQuit'
+    gameRestart:
+      summary: The previous game has concluded and a new game has started
+      description: After a game has finished, the server will automatically restart the game and randomly assign the client or opponent to go first
+      payload:
+        $ref: '#/components/schemas/gameRestart'
+    sessionEnded:
+      summary: The multiplayer session is closed and no longer valid
+      description: The server will close multiplayer sessions after clients leave the session or after a period of missed server pings
+      payload:
+        $ref: '#/components/schemas/sessionEnded'
+
+  schemas:
+    column:
+      type: integer
+      description: The zero-based, game-board column index
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+    clientUser:
+      type: string
+      description: The client username
+      example: xXClientUser21Xx
+    opponentUser:
+      type: string
+      description: The opponent's username
+      example: Opp0nentUser04
+    session:
+      type: string
+      description: The server-generated session code
+      example: a1b12
+    clientAction:
+      type: integer
+      description: The client action code
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+    serverAction:
+      type: integer
+      description: The server action code
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+    createSession:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/clientAction'
+          const: 0
+        user:
+          $ref: '#/components/schemas/clientUser'
+      required:
+        - action
+        - user
+    joinSession:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/clientAction'
+          const: 1
+        session:
+          $ref: '#/components/schemas/session'
+        user:
+          $ref: '#/components/schemas/clientUser'
+      required:
+        - action
+        - session
+        - user
+    move:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/clientAction'
+          const: 2
+        session:
+          $ref: '#/components/schemas/session'
+        user:
+          $ref: '#/components/schemas/clientUser'
+        column:
+          $ref: '#/components/schemas/column'
+      required:
+        - action
+        - session
+        - user
+        - column
+    quit:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/clientAction'
+          const: 3
+        session:
+          $ref: '#/components/schemas/session'
+        user:
+          $ref: '#/components/schemas/clientUser'
+      required:
+        - action
+        - session
+        - user
+    opponentJoin:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/serverAction'
+          const: 1
+        user:
+          $ref: '#/components/schemas/opponentUser'
+      required:
+        - action
+        - user
+    opponentMove:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/serverAction'
+          const: 2
+        column:
+          $ref: '#/components/schemas/column'
+      required:
+        - action
+        - column
+    sessionCreated:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/serverAction'
+          const: 3
+        newSession:
+          $ref: '#/components/schemas/session'
+      required:
+        - action
+        - newSession
+    joinedSession:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/serverAction'
+          const: 4
+        user:
+          $ref: '#/components/schemas/opponentUser'
+      required:
+        - action
+        - user
+    sessionNotFound:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/serverAction'
+          const: 5
+      required:
+        - action
+    opponentQuit:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/serverAction'
+          const: 6
+      required:
+        - action
+    gameRestart:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/serverAction'
+          const: 7
+        thisClientStartsFirst:
+          type: boolean
+      required:
+        - action
+        - thisClientStartsFirst
+    sessionEnded:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/serverAction'
+          const: 8
+      required:
+        - action
