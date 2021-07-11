@@ -3,7 +3,7 @@ asyncapi: 2.0.0
 info:
   title: Connect 4 Multiplayer API
   version: '1.0.0'
-  description: 'A websocket server that can connect connect-4 game clients together'
+  description: 'A websocket server that powers the multiplayer on https://br-connect-4.herokuapp.com/'
   contact:
     name: 'Open a GitHub Issue'
     url: https://github.com/brajkowski/connect4-multiplayer-server/issues
