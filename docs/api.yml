@@ -7,6 +7,9 @@ info:
   contact:
     name: 'Open a GitHub Issue'
     url: https://github.com/brajkowski/connect4-multiplayer-server/issues
+  license:
+    name: MIT
+    url: https://github.com/brajkowski/connect4-multiplayer-server/blob/main/LICENSE
 
 servers:
   public:
