@@ -1,7 +1,7 @@
 {
   "name": "@brajkowski/connect4-web-multiplayer-server",
   "version": "1.0.0",
-  "description": "A websocket server that can connect connect 4 game clients together.",
+  "description": "A websocket server that powers the multiplayer on https://br-connect-4.herokuapp.com/",
   "scripts": {
     "build": "rimraf ./dist && tsc && ag -o ./dist/public/ ./docs/api.yml @asyncapi/html-template",
     "start:dev": "ts-node ./src/index.ts",
