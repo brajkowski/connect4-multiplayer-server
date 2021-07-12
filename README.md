@@ -1,5 +1,7 @@
 # Connect 4 Multiplayer: Server
 
+[![Build](https://github.com/brajkowski/connect4-multiplayer-server/actions/workflows/build.yml/badge.svg)](https://github.com/brajkowski/connect4-multiplayer-server/actions/workflows/build.yml)
+
 A websocket server that powers the multiplayer on https://br-connect-4.herokuapp.com/.
 
 ## Building from Source
