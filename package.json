@@ -22,11 +22,11 @@
   },
   "devDependencies": {
     "@asyncapi/generator": "^1.8.9",
-    "@asyncapi/html-template": "^0.23.7",
+    "@asyncapi/html-template": "^0.24.8",
     "@types/express": "^4.17.13",
     "@types/jest": "^27.0.1",
     "@types/uuid": "^8.3.1",
-    "@types/ws": "^7.4.7",
+    "@types/ws": "^8.5.2",
     "jest": "^27.2.0",
     "rimraf": "^3.0.2",
     "ts-jest": "^27.0.5",
