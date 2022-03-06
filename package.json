@@ -1,6 +1,6 @@
 {
   "name": "@brajkowski/connect4-web-multiplayer-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A websocket server that powers the multiplayer on https://br-connect-4.herokuapp.com/",
   "scripts": {
     "build": "rimraf ./dist && tsc && ag -o ./dist/public/ ./docs/api.yml @asyncapi/html-template",
